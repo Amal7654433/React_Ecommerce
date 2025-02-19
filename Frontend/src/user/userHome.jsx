@@ -85,7 +85,7 @@ const UserHomePage = () => {
                     <div className="product-list">
                         {products.map((product) => (
                             <div key={product._id} className="product-card">
-                                <img src={product.image} alt={product.name} className="product-image" />
+                                <img src={`http://localhost:5000/images/${product.image}`} alt={product.name} className="product-image" />
                                 <h3 className="product-name">{product.name}</h3>
                                 <p className="product-price">Price: ${product.price}</p>
                                 
