@@ -1,118 +1,97 @@
-import React, { useState,useEffect } from "react";
-import "./userLogin.css"; // We'll create this CSS file next
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import "./userLogin.css"; 
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from "../axios/axiosConfig";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+const schema = yup.object().shape({
+    email: yup.string().email("Invalid email format").required("Email is required"),
+    password: yup.string()
+        .min(3, "Password must be at least 6 characters")
+        .matches(/\S+/, "Password cannot contain spaces")
+        .required("Password is required"),
+});
 
 const UserLogin = () => {
-    const [email, setEmail] = useState('')
+    const { register, handleSubmit, formState: { errors }, setError } = useForm({
+        resolver: yupResolver(schema),
+    });
+
     const [loading, setLoading] = useState(false);
-    const [password, setPassword] = useState('')
-    const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
     useEffect(() => {
         const token = localStorage.getItem("userToken");
         if (token) {
-            navigate("/home"); // Redirect to dashboard
+            navigate("/home");
         }
     }, [navigate]);
-    const handleTogglePassword = () => {
-        setShowPassword(!showPassword);
-    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (data) => {
         setLoading(true);
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email || !email.trim()) {
-            setError('Please enter a valid email');
-            setLoading(false);
-            return;
-        }
-        else if (!email || !emailPattern.test(email)) {
-            setError('Please enter a valid email address');
-            setLoading(false);
-            return;
-        }
-        if (password.trim() === '') {
-            setError('Please enter the password');
-            setLoading(false);
-            return;
-        }
-        else if (!password || password.length < 3) {
-            setError('Password must be at least 6 characters long');
-            setLoading(false);
-            return;
-        }
-        else if (/\s/.test(password)) {
-            setError('Password cannot contain whitespace');
-            setLoading(false);
-            return;
-        }
         try {
-            const response = await axiosInstance.post('/login', {
-                email,
-                password
-            }, { withCredentials: true });
-          
+            const response = await axiosInstance.post('/login', data, { withCredentials: true });
+
             if (response.status === 200) {
-                localStorage.setItem('userToken',response.data.token)
-                console.log(response.data.token)
-                setTimeout(() => {
-                    navigate("/home"); // Redirect after toast
-                }, 1500);
+                localStorage.setItem('userToken', response.data.token);
+                toast.success("Login successful! Redirecting...", { autoClose: 1500 });
+                setTimeout(() => navigate("/home"), 2000);
             }
         } catch (error) {
-            console.error('Failed to sign up:', error);
-            if (error.response && error.response.status === 401) {
-                setError('Incorrect password or email');
-                setLoading(false);
+            console.error('Login failed:', error);
+            if (error.response?.status === 401) {
+                setError("email", { type: "manual", message: "Incorrect email or password" });
             } else {
-                setError('Failed to log in. Please try again.');
-                setLoading(false);
+                toast.error("Failed to log in. Please try again.");
             }
+            setLoading(false);
         }
     };
 
     return (
         <div className="totUserLoginContainer">
+            <ToastContainer position="top-center" autoClose={2000} />
             <div className="login-container">
                 <div className="login-box">
                     <h2>Login</h2>
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    <form >
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="input-group">
                             <label htmlFor="email">Email</label>
                             <input
+                                {...register("email")}
                                 type="email"
                                 id="email"
-                                name="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Enter your email"
                             />
-
+                            <p className="error-message">{errors.email?.message}</p>
                         </div>
                         <div className="input-group">
                             <label htmlFor="password">Password</label>
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                name="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
-                            />
-
+                          
+                                <input
+                                    {...register("password")}
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    placeholder="Enter your password"
+                                />
+                                {/* <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
+                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                </button> */}
+                            
+                            <p className="error-message">{errors.password?.message}</p>
                         </div>
-                        <button type="button" onClick={handleSubmit} className="login-button" disabled={loading}>
-                            {loading ? 'Logging in...' : 'Login'}
+                        <button type="submit" className="login-button" disabled={loading}>
+                            {loading ? "Logging in..." : "Login"}
                         </button>
                     </form>
                     <p className="signup-link">
-                        Don't have an account? <a href="/register">Sign up</a>
+                        Don't have an account? <Link to="/register">Sign up</Link>
                     </p>
                 </div>
             </div>

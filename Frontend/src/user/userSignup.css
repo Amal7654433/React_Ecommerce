@@ -25,7 +25,12 @@
     max-width: 400px;
     text-align: center;
   }
-  
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
   .signup-box h2 {
     margin-bottom: 1.5rem;
     color: #333;
@@ -73,7 +78,8 @@
     cursor: pointer;
     transition: background 0.3s ease;
   }
-  
+
+
   .signup-button:hover {
     background: #2575fc;
   }

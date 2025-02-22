@@ -3,6 +3,9 @@
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import PrivateRoute from './private/privateRoute';
 import AdminLogin from './admin/adminLogin'
 import AdminDashboard from './admin/adminDashboard'
@@ -19,6 +22,8 @@ function App() {
 
   return (
     <>
+    
+
       <Routes>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route element={<PrivateRoute />}>
