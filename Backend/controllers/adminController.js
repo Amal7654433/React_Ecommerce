@@ -61,3 +61,6 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     const products = await Products.find({});
     res.status(200).json(products);
 });
+export const adminCheck = asyncHandler(async (req, res) => {
+console.log(req.adminId)
+});

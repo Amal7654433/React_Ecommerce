@@ -29,6 +29,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
 export const userLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+    console.log('hello')
     const user = await User.findOne({ email });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -57,7 +58,7 @@ export const userLogout = (req, res) => {
 export const userHome = asyncHandler(async (req, res) => {
     const products = await Products.find({});
     let user = req.userId ? await User.findById(req.userId) : null;
-
+console.log('amal',products)
     res.status(200).json({ products, user });
 });
 
@@ -107,11 +108,9 @@ export const createOrder = asyncHandler(async (req, res) => {
 export const getUserOrders = asyncHandler(async (req, res) => {
     const userId = req.userId;
     console.log(userId);
-
     const orders = await Order.find({ user: userId }).populate("products.product", "name price");
     if (!orders.length) {
         return res.status(404).json({ message: "No orders found for this user." });
     }
-
     res.status(200).json(orders);
 });

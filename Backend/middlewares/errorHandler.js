@@ -1,9 +1,11 @@
 const errorHandler = (err, req, res, next) => {
-    console.error(err.stack); // Log error for debugging
+    console.error("Error:", err.message); // Log only the message
 
-    res.status(err.status || 500).json({ 
-        message: err.message || 'Something went wrong' 
+    res.status(res.statusCode === 200 ? 500 : res.statusCode).json({
+        success: false,
+        message: err.message || "Something went wrong",
     });
 };
 
 export default errorHandler;
+

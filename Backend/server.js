@@ -24,9 +24,10 @@ app.use(cors({
     origin: ['http://localhost:5173'],
 
 }));
+
 app.use(adminRouter)
 app.use(userRouter)
-app.use(errorHandler)
+app.use(errorHandler);
 app.listen(5000, () => {
     connectDb()
     console.log('server started')

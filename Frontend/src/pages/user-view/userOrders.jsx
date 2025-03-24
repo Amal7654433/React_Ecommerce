@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../axios/axiosConfig";
-import Navbar from "./userNavbar";
-import "./userOrder.css";
+
+
+import axiosInstance from "../../axios/axiosConfig";
 
 const UserOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -11,7 +11,7 @@ const UserOrders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axiosInstance.get("/order"); 
+                const response = await axiosInstance.get("/order");
                 setOrders(response.data);
             } catch (error) {
                 setError(error.response?.data?.message || "Failed to fetch orders.");
@@ -28,7 +28,7 @@ const UserOrders = () => {
 
     return (
         <>
-            <Navbar />
+    
             <div className="orders-container">
                 <h1>Your Orders</h1>
                 {orders.length === 0 ? (
